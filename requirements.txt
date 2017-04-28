@@ -1,0 +1,9 @@
+bokeh==0.12.5
+flexx==0.4.1
+keras>=2.0.0
+librosa
+numpy
+pandas
+sklearn
+sounddevice
+tornado==4.3

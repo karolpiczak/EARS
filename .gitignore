@@ -1,0 +1,7 @@
+/tmp/
+/.idea/
+*.pyc
+
+/ears/dataset/audio
+/ears/dataset/tmp
+__pycache__

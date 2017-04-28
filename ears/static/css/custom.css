@@ -1,0 +1,22 @@
+@media (min-width: 768px) {
+    .navbar {
+        border-radius: 0px;
+    }
+}
+
+.plot-box {
+    width: 650px;
+    padding: 10px;
+}
+
+.plot-box label, .plot-box input {
+    font-family: "Signika", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 13px;
+    line-height: 1.846;
+    color: #666666;
+}
+
+.plot-box input[type=text] {
+    width: 30px !important;
+    vertical-align: baseline !important;
+}
