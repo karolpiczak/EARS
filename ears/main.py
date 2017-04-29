@@ -59,7 +59,7 @@ HISTORY = ColumnDataSource(
 
 THRESHOLD = ColumnDataSource(
     data=dict(
-        threshold=[PALETTE_DEFAULT_THRESHOLD]
+        threshold=[PALETTE_DEFAULT_THRESHOLD - 0.01]
     )
 )
 
