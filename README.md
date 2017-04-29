@@ -1,4 +1,4 @@
-<img src="logo.gif" alt="EARS logo" title="Environmental Audio Recognition System" align="right" />
+<img src="assets/logo.gif" alt="EARS logo" title="Environmental Audio Recognition System" align="right" />
 
 ## EARS: Environmental Audio Recognition System
 
@@ -11,7 +11,7 @@ This can become really taxing on the CPU, so some proper cooling solution (heats
 
 ## Quick look
 
-![Demo of EARS: Environmental Audio Recognition System](EARS-demo.gif)
+![Demo of EARS: Environmental Audio Recognition System](assets/EARS-demo.gif)
 
 ## Installation
 
@@ -100,6 +100,10 @@ File                | Description
 - Upload the new model files to the Raspberry Pi device and restart the app.
 
 If you want to train a completetly different model, then you can have a look at [`train.py`](ears/train.py), but in this case you probably already know what to do either way.
+
+## Photos from my development field:
+
+![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo.gif) ![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo2.gif)
 
 ## License
 
