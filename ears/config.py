@@ -15,6 +15,8 @@ PREDICTION_STEP = 6  # How often new predictions should be output, in blocks
 PREDICTION_STEP_IN_MS = int(PREDICTION_STEP * BLOCK_SIZE / SAMPLING_RATE * 1000)
 SEGMENT_LENGTH = 100  # Lookback window for classification, in chunks, 100 @ 20 ms = 2 s
 
+PROCESSING_DELAY = 3  # Audio streaming delay compensation, in processing steps
+
 MEL_BANDS = 80  # Number of mel frequency bands
 MEL_FREQS = librosa.core.mel_frequencies(n_mels=MEL_BANDS)
 

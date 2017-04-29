@@ -3,13 +3,13 @@
 import json
 import numpy as np
 
-from bokeh.models import FixedTicker
-from bokeh.plotting import figure, ColumnDataSource
-from bokeh.models.mappers import LinearColorMapper
-from bokeh.palettes import Viridis256, Plasma256, Inferno256, Magma256
-from bokeh.layouts import column, row, widgetbox
 from bokeh.io import curdoc
-from bokeh.models import HoverTool, Slider, Div, FuncTickFormatter
+from bokeh.layouts import column, row, widgetbox
+from bokeh.models import Button, Div, FixedTicker, FuncTickFormatter, HoverTool, Slider
+from bokeh.models.callbacks import CustomJS
+from bokeh.models.mappers import LinearColorMapper
+from bokeh.palettes import Viridis256
+from bokeh.plotting import ColumnDataSource, figure
 
 import audio
 from config import *
@@ -66,6 +66,12 @@ THRESHOLD = ColumnDataSource(
 SPECTROGRAM = ColumnDataSource(
     data=dict(
         value=[np.zeros((SPEC_HEIGHT, SPEC_WIDTH), dtype='float32')]
+    )
+)
+
+LIVE_AUDIO = ColumnDataSource(
+    data=dict(
+        signal=[],
     )
 )
 
@@ -250,67 +256,120 @@ def plot_detection_last():
 
 
 def update():
-    spectrogram = audio.spectrogram.copy()
-    predictions = audio.predictions.copy()
+    if len(audio.live_audio_feed):
+        spectrogram = audio.spectrogram.copy()
+        predictions = audio.predictions.copy()
 
-    rows = len(labels)
-    cols = np.shape(predictions)[1]
-    pred = predictions[:, -1].tolist()
+        rows = len(labels)
+        cols = np.shape(predictions)[1]
+        pred = predictions[:, -1].tolist()
 
-    # Update spectrogram
-    data = dict(
-        value=[spectrogram],
-    )
+        # Push new audio
+        data = dict(
+            signal=[audio.live_audio_feed.pop()]
+        )
 
-    SPECTROGRAM.data = data
+        LIVE_AUDIO.data = data
 
-    # Update last detection plot data
-    DETECTION.data = dict(
-        pos=np.arange(0, rows, 1)[::-1] + 1,  # in reversed order
-        label=labels,
-        value=pred,
-        pretty_value=[str(to_percentage(v)) + '%' for v in pred],
-        color=[colorizer(v, True, threshold=threshold.value) for v in pred]
-    )
+        # Update spectrogram
+        data = dict(
+            value=[spectrogram],
+        )
 
-    # Update threshold line
-    THRESHOLD.data = dict(
-        threshold=[threshold.value - 0.01]
-    )
+        SPECTROGRAM.data = data
 
-    # Update detection history data
-    data = dict(
-        label=[],
-        x=[],
-        y=[],
-        value=[],
-        pretty_value=[],
-        color=[],
-    )
+        # Update last detection plot data
+        DETECTION.data = dict(
+            pos=np.arange(0, rows, 1)[::-1] + 1,  # in reversed order
+            label=labels,
+            value=pred,
+            pretty_value=[str(to_percentage(v)) + '%' for v in pred],
+            color=[colorizer(v, True, threshold=threshold.value) for v in pred]
+        )
 
-    for r in range(rows):
-        for c in range(cols):
-            data['label'].append(labels[r])
-            data['x'].append(0.5 + c - cols)
-            data['y'].append(rows - r)  # inverted order
-            data['value'].append(predictions[r, c])
-            data['pretty_value'].append(str(to_percentage(predictions[r, c])) + '%')
-            data['color'].append(colorizer(predictions[r, c], True, threshold=threshold.value))
+        # Update threshold line
+        THRESHOLD.data = dict(
+            threshold=[threshold.value - 0.01]
+        )
 
-    HISTORY.data = data
+        # Update detection history data
+        data = dict(
+            label=[],
+            x=[],
+            y=[],
+            value=[],
+            pretty_value=[],
+            color=[],
+        )
 
+        for r in range(rows):
+            for c in range(cols):
+                data['label'].append(labels[r])
+                data['x'].append(0.5 + c - cols)
+                data['y'].append(rows - r)  # inverted order
+                data['value'].append(predictions[r, c])
+                data['pretty_value'].append(str(to_percentage(predictions[r, c])) + '%')
+                data['color'].append(colorizer(predictions[r, c], True, threshold=threshold.value))
+
+        HISTORY.data = data
+
+
+live_audio_callback = CustomJS(args=dict(feed=LIVE_AUDIO), code="""
+    if (cb_obj.attributes.name == 'mute_button') {{
+        if (is_muted) {{
+            is_muted = false;
+            cb_obj.attributes.label = 'Mute';
+            cb_obj.trigger('change');
+            console.log('Playback unmuted');
+        }} else {{
+            is_muted = true;
+            cb_obj.attributes.label = 'Unmute';
+            cb_obj.trigger('change');
+            console.log('Playback muted');
+        }}
+    }}
+
+    var new_signal = feed.data.signal[0];
+
+    var node = audio_context.createBufferSource();
+    var buffer = audio_context.createBuffer(1, {}, {});
+    var signal = buffer.getChannelData(0);
+
+    var streaming_delay = {};
+
+    if (next_chunk_time == 0) {{
+        next_chunk_time = audio_context.currentTime + streaming_delay;
+    }}
+
+
+    if (!is_muted) {{
+        for (var i=0; i<new_signal.length; i++) {{
+            signal[i] = new_signal[i];
+        }}
+
+        node.buffer = buffer;
+        node.connect(audio_context.destination);
+        node.start(next_chunk_time);
+    }}
+
+    next_chunk_time = next_chunk_time + buffer.duration;
+""".format(BLOCK_SIZE * PREDICTION_STEP, SAMPLING_RATE, PREDICTION_STEP_IN_MS / 1000.))
+
+LIVE_AUDIO.js_on_change('data', live_audio_callback)
 
 spec_plot = plot_spectrogram()
 history_plot = plot_detection_history()
 last_plot = plot_detection_last()
 filler = Div(width=(np.sum(WIDTHS) - SLIDER_WIDTH) // 2 + 20)
+filler2 = Div(width=(np.sum(WIDTHS) - SLIDER_WIDTH) // 2 + 20)
 
 grid = column(
     row(spec_plot),
     row(history_plot, last_plot),
-    row(filler, widgetbox(threshold))
+    row(filler, widgetbox(threshold)),
+    row(filler2, Button(label='Mute', callback=live_audio_callback, name='mute_button'))
 )
 
 curdoc().title = 'EARS: Environmental Audio Recognition System'
 curdoc().add_root(grid)
-curdoc().add_periodic_callback(update, 1000)
+curdoc().add_periodic_callback(update, 100)

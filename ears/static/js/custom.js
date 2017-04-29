@@ -8,12 +8,7 @@ function _base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
-// var wavesurfer = WaveSurfer.create({
-//     container: '#waveform'
-// });
-//
-// wavesurfer.on('ready', function () {
-//     wavesurfer.play();
-// });
-
-// wavesurfer.loadArrayBuffer(_base64ToArrayBuffer(audio_base64));
+var AudioContext = AudioContext || webkitAudioContext || mozAudioContext;
+var audio_context = new AudioContext();
+var next_chunk_time = 0;
+var is_muted = false;

@@ -23,9 +23,12 @@ with open('ears/model_labels.json', 'r') as labels_file:
 
 signal = np.zeros((AUDIO_DURATION * SAMPLING_RATE, 1), dtype='float32')
 spectrogram = np.zeros((MEL_BANDS, AUDIO_DURATION * SAMPLING_RATE // CHUNK_SIZE), dtype='float32')
-audio_queue = collections.deque(maxlen=1000)
-last_chunk = np.zeros((CHUNK_SIZE, 1), dtype='float32')
+audio_queue = collections.deque(maxlen=1000)  # Queue for incoming audio blocks
+last_chunk = np.zeros((CHUNK_SIZE, 1), dtype='float32')  # Short term memory for the next step
+
 predictions = np.zeros((len(labels), AUDIO_DURATION * SAMPLING_RATE // (BLOCK_SIZE * PREDICTION_STEP)), dtype='float32')
+live_audio_feed = collections.deque(maxlen=1)
+
 model = None
 
 
@@ -84,6 +87,7 @@ def start():
     stream.start()
 
     blocks = []
+    processing_queue = collections.deque()
 
     # Process incoming audio blocks
     while True:
@@ -91,16 +95,25 @@ def start():
             blocks.append(audio_queue.popleft())
 
         if len(blocks) == PREDICTION_STEP:
+            new_audio = np.concatenate(blocks)
+
+            # Populate audio for live streaming
+            live_audio_feed.append(new_audio[:, 0].copy())
+
+            blocks = []
+            processing_queue.append(new_audio)
+
+        if len(processing_queue) > PROCESSING_DELAY + 1:  # +1 for JavaScript streaming delay
             start_time = time.time()
 
             # Populate audio signal
-            new_audio = np.concatenate(blocks)
-            n_samples = len(new_audio)
+            step_audio = processing_queue.pop()
+            n_samples = len(step_audio)
             signal[:-n_samples] = signal[n_samples:]
-            signal[-n_samples:] = new_audio
+            signal[-n_samples:] = step_audio[:]
 
             # Populate spectrogram
-            new_spec = librosa.feature.melspectrogram(np.concatenate([last_chunk, new_audio])[:, 0],
+            new_spec = librosa.feature.melspectrogram(np.concatenate([last_chunk, step_audio])[:, 0],
                                                       SAMPLING_RATE, n_fft=FFT_SIZE,
                                                       hop_length=CHUNK_SIZE, n_mels=MEL_BANDS)
             with warnings.catch_warnings():
@@ -123,17 +136,16 @@ def start():
             target = labels[np.argmax(pred)]
 
             # Clean up
-            last_chunk[:] = new_audio[-CHUNK_SIZE:]
+            last_chunk[:] = step_audio[-CHUNK_SIZE:]
 
             end_time = time.time()
             time_spent = int((end_time - start_time) * 1000)
             temp, freq = get_raspberry_stats()
-            blocks_in_ms = int(len(blocks) * BLOCK_SIZE / SAMPLING_RATE * 1000)
+            blocks_in_ms = int(PREDICTION_STEP * BLOCK_SIZE / SAMPLING_RATE * 1000)
             msg = '[{}] {}% = {} ms / {} ms ({} blocks) - temp: {} | freq: {} ==> {}'
             timestamp = time.strftime('%H:%M:%S')
             logger.debug(msg.format(timestamp, np.round(time_spent / blocks_in_ms * 100, 1),
-                                    time_spent, blocks_in_ms, len(blocks), temp, freq, target))
-            blocks = []
+                                    time_spent, blocks_in_ms, PREDICTION_STEP, temp, freq, target))
 
         time.sleep(0.05)
 
