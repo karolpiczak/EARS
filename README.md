@@ -4,12 +4,15 @@
 
 ## EARS: Environmental Audio Recognition System
 
-EARS is a proof of concept implementation of a convolutional neural network for live environmental audio processing & recognition on low-power SoC devices (in this case tested on a Raspberry Pi 3 Model B).
+**EARS** is a proof of concept implementation of a *convolutional neural network* for live environmental audio processing & recognition on low-power SoC devices (in this case tested on a *Raspberry Pi 3 Model B*).
 
 It features a background thread for audio capture & classification and a visual dashboard built as a [Bokeh](https://github.com/bokeh/bokeh/) server app for live visualization and audio streaming from the device to the browser.
 
 **Caveats:**
+
 This can become really taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, it should do fine even without one when not using the Bokeh app too much.
+
+The live audio stream can get choppy or out-of-sync, especially when using the mute/unmute button. For production use it should be rewritten in a server-node architecture (SoC devices/sensors only pushing status/classification/audio data, a central server providing visuals/interactivity/archive browsing for end users).
 
 ## Quick look
 
@@ -46,7 +49,7 @@ chmod +x Miniconda3-latest-Linux-armv7l.sh
 sudo ./Miniconda3-latest-Linux-armv7l.sh
 ```
  
-- Add `export PATH="/opt/conda/bin:$PATH` to the end of `/home/pi/.bashrc`. Then reload with `source /home/pi/.bashrc`.
+- Add `export PATH="/opt/conda/bin:$PATH"` to the end of `/home/pi/.bashrc`. Then reload with `source /home/pi/.bashrc`.
 
 - Install Python with required packages:
 
@@ -55,6 +58,11 @@ conda config -add channels rpi
 conda create -n ears python=3.6
 source activate ears
 conda install cython numpy pandas scikit-learn cffi h5py
+```
+
+- Make sure PortAudio is available with headers. If not, installing pyaudio will complain later on:
+
+```bash
 sudo apt-get install libasound-dev libportaudio-dev portaudio19-dev libportaudio2
 ```
 
@@ -66,7 +74,7 @@ sudo apt-get install libasound-dev libportaudio-dev portaudio19-dev libportaudio
 pip install -r /home/pi/ears/requirements.txt
 ```
 
-- Plug a Zoom H1 microphone (or some other audio device, that's the one I used for initial testing) in an audio interface mode (44.1 kHz/16 bit), and verify it's listed b `python -m sounddevice`.
+- Plug a *Zoom H1* microphone into the USB port (or some other audio device, that's the one I used for initial testing), switch it into an audio interface mode (44.1 kHz/16 bit), and verify it's listed by `python -m sounddevice`.
 - Update the `--allow-websocket-origin` option inside `/home/pi/ears/run.sh` file with the IP address of the Raspberry Pi device.
 - Finally, run the app with:
 
@@ -80,7 +88,7 @@ cd /home/pi/ears
 
 ## Training new models
 
-For the time being EARS comes preloaded with a very rudimentary model trained on the [ESC-50 dataset](https://github.com/karoldvl/ESC-50) (3-layer 3x3 convnet), so it's recognition capabilities are limited for live scenarios.
+For the time being EARS comes preloaded with a very rudimentary model trained on the [ESC-50 dataset](https://github.com/karoldvl/ESC-50) (convnet consisting of 3 layers, 3x3 square filters), so it's recognition capabilities are limited for actual live scenarios.
 
 If you want to train the same model on a different dataset:
 - Download the source code to a workstation/server with a GPU card.
