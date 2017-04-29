@@ -1,5 +1,7 @@
 <img src="assets/logo.gif" alt="EARS logo" title="Environmental Audio Recognition System" align="right" />
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 ## EARS: Environmental Audio Recognition System
 
 EARS is a proof of concept implementation of a convolutional neural network for live environmental audio processing & recognition on low-power SoC devices (in this case tested on a Raspberry Pi 3 Model B).
