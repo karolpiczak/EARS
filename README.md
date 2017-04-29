@@ -103,7 +103,7 @@ If you want to train a completetly different model, then you can have a look at 
 
 ## Photos from my development field:
 
-![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo.gif) ![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo2.gif)
+![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo.gif) ![EARS on Raspberry Pi + Zoom H1](assets/ears-deployment-photo-2.gif)
 
 ## License
 
