@@ -3,6 +3,7 @@ keras>=2.0.0
 librosa
 numpy
 pandas
+pyaudio
 sklearn
 sounddevice
 tornado==4.3
