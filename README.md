@@ -6,11 +6,11 @@
 
 **EARS** is a proof of concept implementation of a ***convolutional neural network*** for **live environmental audio processing & recognition** on low-power SoC devices (at this time it has been developed and tested on a ***Raspberry Pi 3 Model B***).
 
-**EARS** features a background thread for **audio capture & classification** and a **[Bokeh](https://github.com/bokeh/bokeh/) server based dashboard** providing **live visualization** and **audio streaming** from the device to the browser.
+EARS features a background thread for **audio capture & classification** and a [Bokeh](https://github.com/bokeh/bokeh/) server based dashboard providing **live visualization** and **audio streaming** from the device to the browser.
 
 ### Caveats: ###
 
-**EARS** is quite taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, when not using the Bokeh app too much, it should work fine even without one.
+EARS is quite taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, when not using the Bokeh app too much, it should work fine even without one.
 
 The live audio stream can get choppy or out-of-sync, especially when using the mute/unmute button.
 
@@ -90,7 +90,7 @@ cd /home/pi/ears
 
 ## Training new models
 
-For the time being, **EARS** comes preloaded with a very rudimentary model trained on the [**ESC-50 dataset**](https://github.com/karoldvl/ESC-50) (convnet consisting of 3 layers, 3x3 square filters), so it's recognition capabilities are limited for actual live scenarios.
+For the time being, EARS comes preloaded with a very rudimentary model trained on the [**ESC-50 dataset**](https://github.com/karoldvl/ESC-50) (convnet consisting of 3 layers, 3x3 square filters), so it's recognition capabilities are limited for actual live scenarios.
 
 If you want to train the same model on a different dataset:
 - Download the source code to a workstation/server with a GPU card.
