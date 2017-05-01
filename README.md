@@ -4,7 +4,7 @@
 
 ## EARS: Environmental Audio Recognition System
 
-**EARS** is a proof of concept implementation of a ***convolutional neural network*** for **live environmental audio processing & recognition** on low-power SoC devices (at this time it has been developed and tested on a ***Raspberry Pi 3 Model B***).
+**EARS** is a proof of concept implementation of a ***convolutional neural network*** for **live environmental audio processing & recognition** on low-power [*SoC*](https://en.wikipedia.org/wiki/System_on_a_chip) devices (at this time it has been developed and tested on a ***Raspberry Pi 3 Model B***).
 
 EARS features a background thread for **audio capture & classification** and a [Bokeh](https://github.com/bokeh/bokeh/) server based dashboard providing **live visualization** and **audio streaming** from the device to the browser.
 
