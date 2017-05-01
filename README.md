@@ -22,7 +22,7 @@ Actual production deployments would profit from a server-node architecture where
 
 ## Installation
 
-**EARS** has been developed and tested on a Raspberry Pi 3 Model B device. To recreate the environment used for developing this demo:
+EARS has been developed and tested on a Raspberry Pi 3 Model B device. To recreate the environment used for developing this demo:
 
 ### Step 1 - prepare a Raspberry Pi device
 - Get a spare Raspberry Pi 3 Model B with a blank SD card.
