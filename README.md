@@ -4,15 +4,17 @@
 
 ## EARS: Environmental Audio Recognition System
 
-**EARS** is a proof of concept implementation of a ***convolutional neural network*** for **live environmental audio processing & recognition** on low-power SoC devices (in this case tested on a ***Raspberry Pi 3 Model B***).
+**EARS** is a proof of concept implementation of a ***convolutional neural network*** for **live environmental audio processing & recognition** on low-power SoC devices (at this time it has been developed and tested on a ***Raspberry Pi 3 Model B***).
 
-It features a background thread for **audio capture & classification** and a **visual dashboard** built as a [Bokeh](https://github.com/bokeh/bokeh/) server app for **live visualization** and **audio streaming** from the device to the browser.
+**EARS** features a background thread for **audio capture & classification** and a **[Bokeh](https://github.com/bokeh/bokeh/) server based dashboard** providing **live visualization** and **audio streaming** from the device to the browser.
 
 **Caveats:**
 
-This can become really taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, it should do fine even without one when not using the Bokeh app too much.
+**EARS** is quite taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, when not using the Bokeh app too much, it should work fine even without one.
 
-The live audio stream can get choppy or out-of-sync, especially when using the mute/unmute button. For production use it should be rewritten in a server-node architecture (SoC devices/sensors only pushing status/classification/audio data, a central server providing visuals/interactivity/archive browsing for end users).
+The live audio stream can get choppy or out-of-sync, especially when using the mute/unmute button.
+
+Actual production deployments would profit from a server-node architecture where SoC devices are only pushing predictions, status updates and audio feeds to a central server handling all end user interaction, material browsing and visualization. This may be implemented in future versions, but no promises here.
 
 ## Quick look
 
@@ -20,7 +22,7 @@ The live audio stream can get choppy or out-of-sync, especially when using the m
 
 ## Installation
 
-To recreate the environment used for developing this demo:
+**EARS** has been developed and tested on a Raspberry Pi 3 Model B device. To recreate the environment used for developing this demo:
 
 ### Step 1 - prepare a Raspberry Pi device
 - Get a spare Raspberry Pi 3 Model B with a blank SD card.
@@ -60,7 +62,7 @@ source activate ears
 conda install cython numpy pandas scikit-learn cffi h5py
 ```
 
-- Make sure PortAudio is available with headers. If not, installing pyaudio will complain later on:
+- Make sure PortAudio headers are available. If not, installing pyaudio will complain later on:
 
 ```bash
 sudo apt-get install libasound-dev libportaudio-dev portaudio19-dev libportaudio2
@@ -74,7 +76,7 @@ sudo apt-get install libasound-dev libportaudio-dev portaudio19-dev libportaudio
 pip install -r /home/pi/ears/requirements.txt
 ```
 
-- Plug a *Zoom H1* microphone into the USB port (or some other audio device, that's the one I used for initial testing), switch it into an audio interface mode (44.1 kHz/16 bit), and verify it's listed by `python -m sounddevice`.
+- Plug a *Zoom H1* microphone into the USB port (or some other audio device, but that's the one I used for initial testing), switch it into an audio interface mode (44.1 kHz/16 bit), and verify it's listed by `python -m sounddevice`.
 - Update the `--allow-websocket-origin` option inside `/home/pi/ears/run.sh` file with the IP address of the Raspberry Pi device.
 - Finally, run the app with:
 
@@ -84,11 +86,11 @@ cd /home/pi/ears
 ./run.sh
 ```
 
-- Open the web browser to: http://RASPBERRY_PI_IP:5006/
+- Point the web browser to: `http://RASPBERRY_PI_IP:5006/`
 
 ## Training new models
 
-For the time being EARS comes preloaded with a very rudimentary model trained on the [ESC-50 dataset](https://github.com/karoldvl/ESC-50) (convnet consisting of 3 layers, 3x3 square filters), so it's recognition capabilities are limited for actual live scenarios.
+For the time being, **EARS** comes preloaded with a very rudimentary model trained on the [**ESC-50 dataset**](https://github.com/karoldvl/ESC-50) (convnet consisting of 3 layers, 3x3 square filters), so it's recognition capabilities are limited for actual live scenarios.
 
 If you want to train the same model on a different dataset:
 - Download the source code to a workstation/server with a GPU card.
@@ -109,7 +111,7 @@ File                | Description
 
 - Upload the new model files to the Raspberry Pi device and restart the app.
 
-If you want to train a completetly different model, then you can have a look at [`train.py`](ears/train.py), but in this case you probably already know what to do either way.
+If you want to train a completely different model, then you can have a look at [`train.py`](ears/train.py). In this case you probably know what to do either way.
 
 ## Photos from my development field:
 
