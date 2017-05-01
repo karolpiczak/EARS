@@ -8,7 +8,7 @@
 
 **EARS** features a background thread for **audio capture & classification** and a **[Bokeh](https://github.com/bokeh/bokeh/) server based dashboard** providing **live visualization** and **audio streaming** from the device to the browser.
 
-**Caveats:**
+### Caveats: ###
 
 **EARS** is quite taxing on the CPU, so some proper cooling solution (heatsink) is advisable. Nevertheless, when not using the Bokeh app too much, it should work fine even without one.
 
