@@ -65,7 +65,7 @@ conda install cython numpy pandas scikit-learn cffi h5py
 - Make sure PortAudio headers are available. If not, installing pyaudio will complain later on:
 
 ```bash
-sudo apt-get install libasound-dev libportaudio-dev portaudio19-dev libportaudio2
+sudo apt-get install portaudio19-dev
 ```
 
 ### Step 3 - download EARS and install requirements
