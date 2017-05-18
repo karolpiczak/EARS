@@ -4,6 +4,8 @@ librosa
 numpy
 pandas
 pyaudio
+pydub
 sklearn
 sounddevice
 tornado==4.3
+tqdm
