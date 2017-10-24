@@ -56,7 +56,7 @@ sudo ./Miniconda3-latest-Linux-armv7l.sh
 - Install Python with required packages:
 
 ```bash
-conda config -add channels rpi
+conda config --add channels rpi
 conda create -n ears python=3.6
 source activate ears
 conda install cython numpy pandas scikit-learn cffi h5py
