@@ -1,6 +1,6 @@
 bokeh==0.12.5
 keras>=2.0.0
-librosa
+librosa==0.4.2
 numpy
 pandas
 pyaudio
